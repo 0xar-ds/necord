@@ -5,6 +5,7 @@ import { NecordExplorerService } from '../necord-explorer.service';
 import { ListenerDiscovery } from './listener.discovery';
 import { DiscoveryModule, DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import * as CustomListeners from './handlers';
+import { BASE_CLIENT_EVENT, ClientEventUnion } from './listener.interface';
 
 const { BaseHandler, ...listeners } = CustomListeners;
 
@@ -50,6 +51,13 @@ export class ListenersModule implements OnModuleInit, OnApplicationBootstrap {
 				.filter(method => this.reflector.get(CustomListenerHandler, prototype[method]));
 
 			this.client.on(customListener, (...args) => {
+				Object.defineProperty(args, BASE_CLIENT_EVENT, {
+					value: { event: customListener, payload: args } as ClientEventUnion<
+						typeof customListener
+					>,
+					enumerable: false
+				});
+
 				for (const method of methods) {
 					instance[method](args);
 				}
