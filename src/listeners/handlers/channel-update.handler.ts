@@ -21,16 +21,16 @@ export type CustomChannelUpdateEvents = {
 @CustomListener('channelUpdate')
 export class ChannelUpdateHandler extends BaseHandler<CustomChannelUpdateEvents> {
 	@CustomListenerHandler()
-	public handleGuildChannelPermissionsUpdate([
-		oldChannel,
-		newChannel
-	]: ContextOf<'channelUpdate'>) {
+	public handleGuildChannelPermissionsUpdate(...args: ContextOf<'channelUpdate'>) {
+		const [oldChannel, newChannel] = args;
+
 		if (
 			(oldChannel as GuildChannel).permissionOverwrites !==
 			(newChannel as GuildChannel).permissionOverwrites
 		) {
 			this.emit(
 				'guildChannelPermissionsUpdate',
+				args,
 				newChannel,
 				(oldChannel as GuildChannel).permissionOverwrites,
 				(newChannel as GuildChannel).permissionOverwrites

@@ -33,25 +33,36 @@ export type CustomGuildUpdateEvents = {
 @CustomListener('guildUpdate')
 export class GuildUpdateHandler extends BaseHandler<CustomGuildUpdateEvents> {
 	@CustomListenerHandler()
-	public handleGuildBoostLevel([oldGuild, newGuild]: ContextOf<'guildUpdate'>) {
+	public handleGuildBoostLevel(...args: ContextOf<'guildUpdate'>) {
+		const [oldGuild, newGuild] = args;
+
 		if (oldGuild.premiumTier < newGuild.premiumTier) {
-			this.emit('guildBoostLevelUp', newGuild, oldGuild.premiumTier, newGuild.premiumTier);
+			this.emit(
+				'guildBoostLevelUp',
+				args,
+				newGuild,
+				oldGuild.premiumTier,
+				newGuild.premiumTier
+			);
 		}
 
 		if (oldGuild.premiumTier > newGuild.premiumTier) {
-			this.emit('guildBoostLevelDown', oldGuild, newGuild);
+			this.emit('guildBoostLevelDown', args, oldGuild, newGuild);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleGuildVanityURL([oldGuild, newGuild]: ContextOf<'guildUpdate'>) {
+	public handleGuildVanityURL(...args: ContextOf<'guildUpdate'>) {
+		const [oldGuild, newGuild] = args;
+
 		if (!oldGuild.vanityURLCode && newGuild.vanityURLCode) {
-			this.emit('guildVanityURLAdd', newGuild, newGuild.vanityURLCode);
+			this.emit('guildVanityURLAdd', args, newGuild, newGuild.vanityURLCode);
 		}
 
 		if (oldGuild.vanityURLCode !== newGuild.vanityURLCode) {
 			this.emit(
 				'guildVanityURLUpdate',
+				args,
 				newGuild,
 				oldGuild.vanityURLCode,
 				newGuild.vanityURLCode
@@ -59,52 +70,58 @@ export class GuildUpdateHandler extends BaseHandler<CustomGuildUpdateEvents> {
 		}
 
 		if (oldGuild.vanityURLCode && !newGuild.vanityURLCode) {
-			this.emit('guildVanityURLRemove', newGuild, oldGuild.vanityURLCode);
+			this.emit('guildVanityURLRemove', args, newGuild, oldGuild.vanityURLCode);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleGuildPartnered([oldGuild, newGuild]: ContextOf<'guildUpdate'>) {
+	public handleGuildPartnered(...args: ContextOf<'guildUpdate'>) {
+		const [oldGuild, newGuild] = args;
+
 		if (!oldGuild.partnered && newGuild.partnered) {
-			this.emit('guildPartnerAdd', newGuild);
+			this.emit('guildPartnerAdd', args, newGuild);
 		}
 
 		if (oldGuild.partnered && !newGuild.partnered) {
-			this.emit('guildPartnerRemove', newGuild);
+			this.emit('guildPartnerRemove', args, newGuild);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleGuildVerification([oldGuild, newGuild]: ContextOf<'guildUpdate'>) {
+	public handleGuildVerification(...args: ContextOf<'guildUpdate'>) {
+		const [oldGuild, newGuild] = args;
+
 		if (!oldGuild.verified && newGuild.verified) {
-			this.emit('guildVerificationAdd', newGuild);
+			this.emit('guildVerificationAdd', args, newGuild);
 		}
 
 		if (oldGuild.verified && !newGuild.verified) {
-			this.emit('guildVerificationRemove', newGuild);
+			this.emit('guildVerificationRemove', args, newGuild);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleGuildChanges([oldGuild, newGuild]: ContextOf<'guildUpdate'>) {
+	public handleGuildChanges(...args: ContextOf<'guildUpdate'>) {
+		const [oldGuild, newGuild] = args;
+
 		if (!oldGuild.banner && newGuild.banner) {
-			this.emit('guildBannerAdd', newGuild, newGuild.bannerURL());
+			this.emit('guildBannerAdd', args, newGuild, newGuild.bannerURL());
 		}
 
 		if (!oldGuild.afkChannel && newGuild.afkChannel) {
-			this.emit('guildAfkChannelAdd', newGuild, newGuild.afkChannel);
+			this.emit('guildAfkChannelAdd', args, newGuild, newGuild.afkChannel);
 		}
 
 		if (oldGuild.features.length !== newGuild.features.length) {
-			this.emit('guildFeaturesUpdate', newGuild, oldGuild.features, newGuild.features);
+			this.emit('guildFeaturesUpdate', args, newGuild, oldGuild.features, newGuild.features);
 		}
 
 		if (oldGuild.nameAcronym !== newGuild.nameAcronym) {
-			this.emit('guildAcronymUpdate', oldGuild, newGuild);
+			this.emit('guildAcronymUpdate', args, oldGuild, newGuild);
 		}
 
 		if (oldGuild.ownerId !== newGuild.ownerId) {
-			this.emit('guildOwnerUpdate', oldGuild, newGuild);
+			this.emit('guildOwnerUpdate', args, oldGuild, newGuild);
 		}
 	}
 }

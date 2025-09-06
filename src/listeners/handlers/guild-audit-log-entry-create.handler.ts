@@ -27,30 +27,28 @@ export type CustomGuildAuditLogEntryCreateEvents = {
 @CustomListener('guildAuditLogEntryCreate')
 export class GuildAuditLogEntryCreateHandler extends BaseHandler<CustomGuildAuditLogEntryCreateEvents> {
 	@CustomListenerHandler()
-	public handleGuildAuditLogEntryChanges([
-		auditLogEntry,
-		guild
-	]: ContextOf<'guildAuditLogEntryCreate'>) {
+	public handleGuildAuditLogEntryChanges(...args: ContextOf<'guildAuditLogEntryCreate'>) {
+		const [auditLogEntry, guild] = args;
+
 		const { actionType } = auditLogEntry;
 
 		switch (actionType) {
 			case 'Create':
-				this.emit('guildAuditLogEntryAdd', auditLogEntry, guild);
+				this.emit('guildAuditLogEntryAdd', args, auditLogEntry, guild);
 				break;
 			case 'Update':
-				this.emit('guildAuditLogEntryUpdate', auditLogEntry, guild);
+				this.emit('guildAuditLogEntryUpdate', args, auditLogEntry, guild);
 				break;
 			case 'Delete':
-				this.emit('guildAuditLogEntryDelete', auditLogEntry, guild);
+				this.emit('guildAuditLogEntryDelete', args, auditLogEntry, guild);
 				break;
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleGuildAuditLogEntryWebhookChanges([
-		auditLogEntry,
-		guild
-	]: ContextOf<'guildAuditLogEntryCreate'>) {
+	public handleGuildAuditLogEntryWebhookChanges(...args: ContextOf<'guildAuditLogEntryCreate'>) {
+		const [auditLogEntry, guild] = args;
+
 		const { actionType, targetType } = auditLogEntry;
 
 		if (targetType !== 'Webhook') {
@@ -61,6 +59,7 @@ export class GuildAuditLogEntryCreateHandler extends BaseHandler<CustomGuildAudi
 			case 'Create':
 				this.emit(
 					'guildAuditLogEntryWebhookCreate',
+					args,
 					auditLogEntry as GuildAuditLogsEntry<AuditLogEvent.WebhookCreate>,
 					guild
 				);
@@ -68,6 +67,7 @@ export class GuildAuditLogEntryCreateHandler extends BaseHandler<CustomGuildAudi
 			case 'Update':
 				this.emit(
 					'guildAuditLogEntryWebhookUpdate',
+					args,
 					auditLogEntry as GuildAuditLogsEntry<AuditLogEvent.WebhookUpdate>,
 					guild
 				);
@@ -75,6 +75,7 @@ export class GuildAuditLogEntryCreateHandler extends BaseHandler<CustomGuildAudi
 			case 'Delete':
 				this.emit(
 					'guildAuditLogEntryWebhookDelete',
+					args,
 					auditLogEntry as GuildAuditLogsEntry<AuditLogEvent.WebhookDelete>,
 					guild
 				);

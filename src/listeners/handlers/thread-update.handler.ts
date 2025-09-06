@@ -24,31 +24,40 @@ export type CustomThreadUpdateEvents = {
 @CustomListener('threadUpdate')
 export class ThreadUpdateHandler extends BaseHandler<CustomThreadUpdateEvents> {
 	@CustomListenerHandler()
-	public handleThreadStateUpdate([oldThread, newThread]: ContextOf<'threadUpdate'>) {
+	public handleThreadStateUpdate(...args: ContextOf<'threadUpdate'>) {
+		const [oldThread, newThread] = args;
+
 		if (oldThread.archived !== newThread.archived) {
-			this.emit('threadStateUpdate', oldThread, newThread);
+			this.emit('threadStateUpdate', args, oldThread, newThread);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleThreadNameUpdate([oldThread, newThread]: ContextOf<'threadUpdate'>) {
+	public handleThreadNameUpdate(...args: ContextOf<'threadUpdate'>) {
+		const [oldThread, newThread] = args;
+
 		if (oldThread.name !== newThread.name) {
-			this.emit('threadNameUpdate', newThread, oldThread.name, newThread.name);
+			this.emit('threadNameUpdate', args, newThread, oldThread.name, newThread.name);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleThreadLockUpdate([oldThread, newThread]: ContextOf<'threadUpdate'>) {
+	public handleThreadLockUpdate(...args: ContextOf<'threadUpdate'>) {
+		const [oldThread, newThread] = args;
+
 		if (oldThread.locked !== newThread.locked) {
-			this.emit('threadLockStateUpdate', oldThread, newThread);
+			this.emit('threadLockStateUpdate', args, oldThread, newThread);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleThreadRateLimitPerUserUpdate([oldThread, newThread]: ContextOf<'threadUpdate'>) {
+	public handleThreadRateLimitPerUserUpdate(...args: ContextOf<'threadUpdate'>) {
+		const [oldThread, newThread] = args;
+
 		if (oldThread.rateLimitPerUser !== newThread.rateLimitPerUser) {
 			this.emit(
 				'threadRateLimitPerUserUpdate',
+				args,
 				newThread,
 				oldThread.rateLimitPerUser,
 				newThread.rateLimitPerUser
@@ -57,13 +66,13 @@ export class ThreadUpdateHandler extends BaseHandler<CustomThreadUpdateEvents> {
 	}
 
 	@CustomListenerHandler()
-	public handleThreadAutoArchiveDurationUpdate([
-		oldThread,
-		newThread
-	]: ContextOf<'threadUpdate'>) {
+	public handleThreadAutoArchiveDurationUpdate(...args: ContextOf<'threadUpdate'>) {
+		const [oldThread, newThread] = args;
+
 		if (oldThread.autoArchiveDuration !== newThread.autoArchiveDuration) {
 			this.emit(
 				'threadAutoArchiveDurationUpdate',
+				args,
 				newThread,
 				oldThread.autoArchiveDuration,
 				newThread.autoArchiveDuration

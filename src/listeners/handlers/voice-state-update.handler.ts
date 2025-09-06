@@ -24,29 +24,34 @@ export type CustomVoiceStateUpdateEvents = {
 @CustomListener('voiceStateUpdate')
 export class VoiceStateUpdateHandler extends BaseHandler<CustomVoiceStateUpdateEvents> {
 	@CustomListenerHandler()
-	public handleVoiceChannelChanges([oldState, newState]: ContextOf<'voiceStateUpdate'>) {
+	public handleVoiceChannelChanges(...args: ContextOf<'voiceStateUpdate'>) {
+		const [oldState, newState] = args;
+
 		const newMember = newState.member;
 
 		if (!oldState.channel && newState.channel) {
-			this.emit('voiceChannelJoin', newMember, newState.channel);
+			this.emit('voiceChannelJoin', args, newMember, newState.channel);
 		}
 
 		if (oldState.channel && newState.channel && oldState.channel.id !== newState.channel.id) {
-			this.emit('voiceChannelSwitch', newMember, oldState.channel, newState.channel);
+			this.emit('voiceChannelSwitch', args, newMember, oldState.channel, newState.channel);
 		}
 
 		if (oldState.channel && !newState.channel) {
-			this.emit('voiceChannelLeave', newMember, oldState.channel);
+			this.emit('voiceChannelLeave', args, newMember, oldState.channel);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleVoiceChannelMuteChanges([oldState, newState]: ContextOf<'voiceStateUpdate'>) {
+	public handleVoiceChannelMuteChanges(...args: ContextOf<'voiceStateUpdate'>) {
+		const [oldState, newState] = args;
+
 		const newMember = newState.member;
 
 		if (!oldState.mute && newState.mute) {
 			this.emit(
 				'voiceChannelMute',
+				args,
 				newMember,
 				newState.selfMute ? 'self-muted' : 'server-muted'
 			);
@@ -55,6 +60,7 @@ export class VoiceStateUpdateHandler extends BaseHandler<CustomVoiceStateUpdateE
 		if (oldState.mute && !newState.mute) {
 			this.emit(
 				'voiceChannelUnmute',
+				args,
 				newMember,
 				oldState.selfMute ? 'self-muted' : 'server-muted'
 			);
@@ -62,12 +68,15 @@ export class VoiceStateUpdateHandler extends BaseHandler<CustomVoiceStateUpdateE
 	}
 
 	@CustomListenerHandler()
-	public handleVoiceChannelDeafChanges([oldState, newState]: ContextOf<'voiceStateUpdate'>) {
+	public handleVoiceChannelDeafChanges(...args: ContextOf<'voiceStateUpdate'>) {
+		const [oldState, newState] = args;
+
 		const newMember = newState.member;
 
 		if (!oldState.deaf && newState.deaf) {
 			this.emit(
 				'voiceChannelDeaf',
+				args,
 				newMember,
 				newState.selfDeaf ? 'self-deafed' : 'server-deafed'
 			);
@@ -76,6 +85,7 @@ export class VoiceStateUpdateHandler extends BaseHandler<CustomVoiceStateUpdateE
 		if (oldState.deaf && !newState.deaf) {
 			this.emit(
 				'voiceChannelUndeaf',
+				args,
 				newMember,
 				oldState.selfDeaf ? 'self-deafed' : 'server-deafed'
 			);
@@ -83,15 +93,17 @@ export class VoiceStateUpdateHandler extends BaseHandler<CustomVoiceStateUpdateE
 	}
 
 	@CustomListenerHandler()
-	public handleVoiceStreamingChanges([oldState, newState]: ContextOf<'voiceStateUpdate'>) {
+	public handleVoiceStreamingChanges(...args: ContextOf<'voiceStateUpdate'>) {
+		const [oldState, newState] = args;
+
 		const newMember = newState.member;
 
 		if (!oldState.streaming && newState.streaming) {
-			this.emit('voiceStreamingStart', newMember, newState.channel);
+			this.emit('voiceStreamingStart', args, newMember, newState.channel);
 		}
 
 		if (oldState.streaming && !newState.streaming) {
-			this.emit('voiceStreamingStop', newMember, newState.channel);
+			this.emit('voiceStreamingStop', args, newMember, newState.channel);
 		}
 	}
 }
