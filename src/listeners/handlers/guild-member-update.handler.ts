@@ -20,16 +20,22 @@ export type CustomGuildMemberUpdateEvents = {
 @CustomListener('guildMemberUpdate')
 export class GuildMemberUpdateHandler extends BaseHandler<CustomGuildMemberUpdateEvents> {
 	@CustomListenerHandler()
-	public handleGuildMemberAvatar([oldMember, newMember]: ContextOf<'guildMemberUpdate'>) {
+	public handleGuildMemberAvatar(...args: ContextOf<'guildMemberUpdate'>) {
+		const [oldMember, newMember] = args;
+
 		if (oldMember.partial) return;
 
 		if (!oldMember.avatar && newMember.avatar) {
-			this.emit('guildMemberAvatarAdd', newMember, newMember.avatarURL());
+			this.emit(
+				this.extendEventContext('guildMemberAvatarAdd', args),
+				newMember,
+				newMember.avatarURL()
+			);
 		}
 
 		if (oldMember.avatar !== newMember.avatar) {
 			this.emit(
-				'guildMemberAvatarUpdate',
+				this.extendEventContext('guildMemberAvatarUpdate', args),
 				newMember,
 				oldMember.avatarURL(),
 				newMember.avatarURL()
@@ -37,12 +43,18 @@ export class GuildMemberUpdateHandler extends BaseHandler<CustomGuildMemberUpdat
 		}
 
 		if (oldMember.avatar && !newMember.avatar) {
-			this.emit('guildMemberAvatarRemove', newMember, oldMember.avatarURL());
+			this.emit(
+				this.extendEventContext('guildMemberAvatarRemove', args),
+				newMember,
+				oldMember.avatarURL()
+			);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleGuildMemberRoles([oldMember, newMember]: ContextOf<'guildMemberUpdate'>) {
+	public handleGuildMemberRoles(...args: ContextOf<'guildMemberUpdate'>) {
+		const [oldMember, newMember] = args;
+
 		if (oldMember.partial) return;
 
 		const addedRoles: Role[] = newMember.roles.cache.reduce(
@@ -51,7 +63,7 @@ export class GuildMemberUpdateHandler extends BaseHandler<CustomGuildMemberUpdat
 		);
 
 		addedRoles.forEach(role => {
-			this.emit('guildMemberRoleAdd', newMember, role);
+			this.emit(this.extendEventContext('guildMemberRoleAdd', args), newMember, role);
 		});
 
 		const removedRoles: Role[] = oldMember.roles.cache.reduce(
@@ -60,30 +72,34 @@ export class GuildMemberUpdateHandler extends BaseHandler<CustomGuildMemberUpdat
 		);
 
 		removedRoles.forEach(role => {
-			this.emit('guildMemberRoleRemove', newMember, role);
+			this.emit(this.extendEventContext('guildMemberRoleRemove', args), newMember, role);
 		});
 	}
 
 	@CustomListenerHandler()
-	public handleGuildMemberBoosting([oldMember, newMember]: ContextOf<'guildMemberUpdate'>) {
+	public handleGuildMemberBoosting(...args: ContextOf<'guildMemberUpdate'>) {
+		const [oldMember, newMember] = args;
+
 		if (oldMember.partial) return;
 
 		if (!oldMember.premiumSince && newMember.premiumSince) {
-			this.emit('guildMemberBoost', newMember);
+			this.emit(this.extendEventContext('guildMemberBoost', args), newMember);
 		}
 
 		if (oldMember.premiumSince && !newMember.premiumSince) {
-			this.emit('guildMemberUnboost', newMember);
+			this.emit(this.extendEventContext('guildMemberUnboost', args), newMember);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleGuildMemberNicknameUpdate([oldMember, newMember]: ContextOf<'guildMemberUpdate'>) {
+	public handleGuildMemberNicknameUpdate(...args: ContextOf<'guildMemberUpdate'>) {
+		const [oldMember, newMember] = args;
+
 		if (oldMember.partial) return;
 
 		if (oldMember.nickname !== newMember.nickname) {
 			this.emit(
-				'guildMemberNicknameUpdate',
+				this.extendEventContext('guildMemberNicknameUpdate', args),
 				newMember,
 				oldMember.nickname,
 				newMember.nickname
@@ -92,11 +108,13 @@ export class GuildMemberUpdateHandler extends BaseHandler<CustomGuildMemberUpdat
 	}
 
 	@CustomListenerHandler()
-	public handleGuildMemberEntered([oldMember, newMember]: ContextOf<'guildMemberUpdate'>) {
+	public handleGuildMemberEntered(...args: ContextOf<'guildMemberUpdate'>) {
+		const [oldMember, newMember] = args;
+
 		if (oldMember.partial) return;
 
 		if (oldMember.pending !== newMember.pending) {
-			this.emit('guildMemberEntered', newMember);
+			this.emit(this.extendEventContext('guildMemberEntered', args), newMember);
 		}
 	}
 }

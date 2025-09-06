@@ -20,31 +20,52 @@ export type CustomRoleUpdateEvents = {
 @CustomListener('roleUpdate')
 export class RoleUpdateHandler extends BaseHandler<CustomRoleUpdateEvents> {
 	@CustomListenerHandler()
-	public handleRolePositionUpdate([oldRole, newRole]: ContextOf<'roleUpdate'>) {
+	public handleRolePositionUpdate(...args: ContextOf<'roleUpdate'>) {
+		const [oldRole, newRole] = args;
+
 		if (oldRole.rawPosition !== newRole.rawPosition) {
-			this.emit('rolePositionUpdate', newRole, oldRole.rawPosition, newRole.rawPosition);
+			this.emit(
+				this.extendEventContext('rolePositionUpdate', args),
+				newRole,
+				oldRole.rawPosition,
+				newRole.rawPosition
+			);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleRolePermissionsUpdate([oldRole, newRole]: ContextOf<'roleUpdate'>) {
+	public handleRolePermissionsUpdate(...args: ContextOf<'roleUpdate'>) {
+		const [oldRole, newRole] = args;
+
 		if (oldRole.permissions.bitfield !== newRole.permissions.bitfield) {
-			this.emit('rolePermissionsUpdate', newRole, oldRole.permissions, newRole.permissions);
+			this.emit(
+				this.extendEventContext('rolePermissionsUpdate', args),
+				newRole,
+				oldRole.permissions,
+				newRole.permissions
+			);
 		}
 	}
 
 	@CustomListenerHandler()
-	public handleRoleIconChanges([oldRole, newRole]: ContextOf<'roleUpdate'>) {
+	public handleRoleIconChanges(...args: ContextOf<'roleUpdate'>) {
+		const [oldRole, newRole] = args;
+
 		if (!oldRole.icon && newRole.icon) {
-			this.emit('roleIconAdd', newRole, newRole.iconURL());
+			this.emit(this.extendEventContext('roleIconAdd', args), newRole, newRole.iconURL());
 		}
 
 		if (oldRole.icon !== newRole.icon) {
-			this.emit('roleIconUpdate', newRole, oldRole.iconURL(), newRole.iconURL());
+			this.emit(
+				this.extendEventContext('roleIconUpdate', args),
+				newRole,
+				oldRole.iconURL(),
+				newRole.iconURL()
+			);
 		}
 
 		if (oldRole.icon && !newRole.icon) {
-			this.emit('roleIconRemove', newRole, oldRole.iconURL());
+			this.emit(this.extendEventContext('roleIconRemove', args), newRole, oldRole.iconURL());
 		}
 	}
 }
