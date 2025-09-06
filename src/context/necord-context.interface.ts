@@ -12,7 +12,7 @@ import {
 	UserContextMenuCommandInteraction,
 	UserSelectMenuInteraction
 } from 'discord.js';
-import { NecordEvents } from '../listeners';
+import { ClientEventContext, NecordEvents } from '../listeners';
 
 export type AutocompleteContext = [AutocompleteInteraction];
 
@@ -38,4 +38,4 @@ export type UserSelectContext = [UserSelectMenuInteraction];
 
 export type MentionableSelectContext = [MentionableSelectMenuInteraction];
 
-export type ContextOf<K extends keyof E, E = NecordEvents> = E[K];
+export type ContextOf<K extends keyof E, E = NecordEvents> = E[K] & ClientEventContext;
